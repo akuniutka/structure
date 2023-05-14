@@ -1,5 +1,6 @@
 package dev.akuniutka.tree;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -166,6 +167,30 @@ class BinaryTreeTest {
         for(Integer value : tree) {
             assertEquals(values.get(index++), value);
         }
+    }
+
+    @Disabled("Temporary disabled")
+    @Test
+    void testToString() {
+        BinaryTree tree = new BinaryTree();
+        String expected =
+                "- 40\n" +
+                "  +- 30\n" +
+                "  |  +- 10\n" +
+                "  |  |  +- null\n" +
+                "  |  |  +- null\n" +
+                "  |  +- 20\n" +
+                "  |     +- null\n" +
+                "  |     +- null\n" +
+                "  +- 60\n" +
+                "     +- 50\n" +
+                "     |  +- null\n" +
+                "     |  +- null\n" +
+                "     +- 70\n" +
+                "        +- null\n" +
+                "        +- null\n";
+        tree.addAll(Arrays.asList(40, 30, 60, 10, 20, 50, 70));
+        assertEquals(expected, tree.toString());
     }
 
 }

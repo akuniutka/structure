@@ -9,7 +9,10 @@ public class BinaryTree implements Iterable<Integer> {
     private Node root;
     private int size;
 
+    // TODO: add generics support
     // TODO: implement custom comparator for generics
+    // TODO: add null values
+    // TODO: add counter to store duplicates
 
     private static class Node {
         Node left;
@@ -130,45 +133,37 @@ public class BinaryTree implements Iterable<Integer> {
     public boolean remove(Integer value) {
         if (value == null || root == null) {
             return false;
-        } else if (root.value.compareTo(value) == 0) {
-            if (root.left == null) {
-                root = root.right;
-            } else if (root.right == null) {
-                root = root.left;
-            } else {
-                Integer minValueInRightSubTree = findMin(root.right);
-                remove(minValueInRightSubTree);
-                root.value = minValueInRightSubTree;
-            }
-            size--;
-            return true;
         } else {
-            Node node = root, previous = node;
+            Node node = root, previous = null;
             boolean isLeftChild = true;
             while (node != null) {
                 if (node.value.compareTo(value) < 0) {
                     previous = node;
-                    isLeftChild = false;
                     node = node.right;
+                    isLeftChild = false;
                 } else if (node.value.compareTo(value) > 0) {
                     previous = node;
-                    isLeftChild = true;
                     node = node.left;
+                    isLeftChild = true;
                 } else {
                     if (node.left == null) {
-                        if (isLeftChild) {
+                        if (previous == null) {
+                            root = node.right;
+                        } else if (isLeftChild) {
                             previous.left = node.right;
                         } else {
                             previous.right = node.right;
                         }
                     } else if (node.right == null) {
-                        if (isLeftChild) {
+                        if (previous == null) {
+                            root = node.left;
+                        } else if (isLeftChild) {
                             previous.left = node.left;
                         } else {
                             previous.right = node.left;
                         }
                     } else {
-                        Integer minValueInRightSubTree = findMin(node);
+                        Integer minValueInRightSubTree = findMin(node.right);
                         remove(minValueInRightSubTree);
                         node.value = minValueInRightSubTree;
                     }
