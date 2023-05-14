@@ -31,7 +31,7 @@ public class BinaryTree implements Iterable<Integer> {
         String toString(String prefix) {
             StringBuilder buffer = new StringBuilder();
             buffer.append(prefix, 0, prefix.length() - 1);
-            buffer.append(toString()).append("\n");
+            buffer.append(this).append("\n");
             if (left != null) {
                 buffer.append(left.toString(prefix + "  |"));
             }
