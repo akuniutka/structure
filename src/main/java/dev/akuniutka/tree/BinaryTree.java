@@ -22,6 +22,24 @@ public class BinaryTree implements Iterable<Integer> {
         Node(Integer value) {
             this.value = value;
         }
+
+        @Override
+        public String toString() {
+            return "+- " + value;
+        }
+
+        String toString(String prefix) {
+            StringBuilder buffer = new StringBuilder();
+            buffer.append(prefix, 0, prefix.length() - 1);
+            buffer.append(toString()).append("\n");
+            if (left != null) {
+                buffer.append(left.toString(prefix + "  |"));
+            }
+            if (right != null) {
+                buffer.append(right.toString(prefix + "   "));
+            }
+            return buffer.toString();
+        }
     }
 
     private class TreeIterator implements Iterator<Integer> {
@@ -125,7 +143,8 @@ public class BinaryTree implements Iterable<Integer> {
     public boolean addAll(Collection<Integer> values) {
         boolean hasTreeChanged = false;
         for (Integer value : values) {
-            hasTreeChanged = hasTreeChanged || add(value);
+            boolean isValueAdded = add(value);
+            hasTreeChanged = hasTreeChanged || isValueAdded;
         }
         return hasTreeChanged;
     }
@@ -178,7 +197,8 @@ public class BinaryTree implements Iterable<Integer> {
     public boolean removeAll(Collection<Integer> values) {
         boolean hasTreeChanged = false;
         for (Integer value : values) {
-            hasTreeChanged = hasTreeChanged || remove(value);
+            boolean isValueRemoved = remove(value);
+            hasTreeChanged = hasTreeChanged || isValueRemoved;
         }
         return hasTreeChanged;
     }
@@ -186,6 +206,15 @@ public class BinaryTree implements Iterable<Integer> {
     public void clear() {
         root = null;
         size = 0;
+    }
+
+    @Override
+    public String toString() {
+        if (root == null) {
+            return "null";
+        } else {
+            return root.toString(" ");
+        }
     }
 
     private Integer findMin(Node startingNode) {
