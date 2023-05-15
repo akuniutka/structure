@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-public class BinaryTree implements Iterable<Integer> {
+public class BinaryTreeSet implements Iterable<Integer> {
     private Node root;
     private int size;
 
