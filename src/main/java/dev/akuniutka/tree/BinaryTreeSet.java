@@ -1,9 +1,6 @@
 package dev.akuniutka.tree;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class BinaryTreeSet implements Iterable<Integer> {
     private Node root;
@@ -150,36 +147,36 @@ public class BinaryTreeSet implements Iterable<Integer> {
     }
 
     public boolean remove(Integer value) {
-        if (value == null || root == null) {
+        if (value == null) {
             return false;
         } else {
-            Node node = root, previous = null;
+            Node node = root, parent = null;
             boolean isLeftChild = true;
             while (node != null) {
                 if (node.value.compareTo(value) < 0) {
-                    previous = node;
+                    parent = node;
                     node = node.right;
                     isLeftChild = false;
                 } else if (node.value.compareTo(value) > 0) {
-                    previous = node;
+                    parent = node;
                     node = node.left;
                     isLeftChild = true;
                 } else {
                     if (node.left == null) {
-                        if (previous == null) {
+                        if (parent == null) {
                             root = node.right;
                         } else if (isLeftChild) {
-                            previous.left = node.right;
+                            parent.left = node.right;
                         } else {
-                            previous.right = node.right;
+                            parent.right = node.right;
                         }
                     } else if (node.right == null) {
-                        if (previous == null) {
+                        if (parent == null) {
                             root = node.left;
                         } else if (isLeftChild) {
-                            previous.left = node.left;
+                            parent.left = node.left;
                         } else {
-                            previous.right = node.left;
+                            parent.right = node.left;
                         }
                     } else {
                         Integer minValueInRightSubTree = findMin(node.right);
