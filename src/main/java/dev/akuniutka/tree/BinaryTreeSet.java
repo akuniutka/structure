@@ -2,21 +2,17 @@ package dev.akuniutka.tree;
 
 import java.util.*;
 
-public class BinaryTreeSet implements Iterable<Integer> {
+public class BinaryTreeSet<E> implements Iterable<E> {
     private Node root;
     private int size;
+    private final Comparator<? super E> comparator;
 
-    // TODO: add generics support
-    // TODO: implement custom comparator for generics
-    // TODO: add null values
-    // TODO: add counter to store duplicates
-
-    private static class Node {
+    private class Node {
         Node left;
         Node right;
-        Integer value;
+        E value;
 
-        Node(Integer value) {
+        Node(E value) {
             this.value = value;
         }
 
@@ -39,8 +35,8 @@ public class BinaryTreeSet implements Iterable<Integer> {
         }
     }
 
-    private class TreeIterator implements Iterator<Integer> {
-        private final List<Integer> values = new ArrayList<>();
+    private class TreeIterator implements Iterator<E> {
+        private final List<E> values = new ArrayList<>();
         private int cursor;
 
         TreeIterator() {
@@ -53,7 +49,7 @@ public class BinaryTreeSet implements Iterable<Integer> {
         }
 
         @Override
-        public Integer next() {
+        public E next() {
             return values.get(cursor++);
         }
 
@@ -66,6 +62,15 @@ public class BinaryTreeSet implements Iterable<Integer> {
         }
     }
 
+    public BinaryTreeSet() {
+        comparator = null;
+    }
+
+    public BinaryTreeSet(Comparator<? super E> comparator) {
+        this.comparator = comparator;
+    }
+
+
     public boolean isEmpty() {
         return root == null;
     }
@@ -74,12 +79,12 @@ public class BinaryTreeSet implements Iterable<Integer> {
         return size;
     }
 
-    public boolean contains(Integer value) {
+    public boolean contains(E value) {
         Node node = root;
         while (node != null) {
-            if (node.value.compareTo(value) < 0) {
+            if (compare(node.value, value) < 0) {
                 node = node.right;
-            } else if (node.value.compareTo(value) > 0) {
+            } else if (compare(node.value, value) > 0) {
                 node = node.left;
             } else {
                 return true;
@@ -88,27 +93,29 @@ public class BinaryTreeSet implements Iterable<Integer> {
         return false;
     }
 
-    public boolean containsAll(Collection<Integer> values) {
-        boolean hasTreeChanged = true;
-        for (Integer value : values) {
-            hasTreeChanged = hasTreeChanged && contains(value);
+    public boolean containsAll(Collection<E> values) {
+        boolean containsAll = true;
+        for (E value : values) {
+            if (!contains(value)) {
+                containsAll = false;
+            }
         }
-        return hasTreeChanged;
+        return containsAll;
     }
 
-    public Integer findMin() {
+    public E findMin() {
         return findMin(root);
     }
 
-    public Integer findMax() {
+    public E findMax() {
         return findMax(root);
     }
 
-    public Iterator<Integer> iterator() {
+    public Iterator<E> iterator() {
         return new TreeIterator();
     }
 
-    public boolean add(Integer value) {
+    public boolean add(E value) {
         if (value == null) {
             return false;
         } else if (root == null) {
@@ -119,15 +126,15 @@ public class BinaryTreeSet implements Iterable<Integer> {
             Node node = root, previous = node;
             while (node != null) {
                 previous = node;
-                if (previous.value.compareTo(value) < 0) {
+                if (compare(previous.value, value) < 0) {
                     node = previous.right;
-                } else if (previous.value.compareTo(value) > 0) {
+                } else if (compare(previous.value, value) > 0) {
                     node = previous.left;
                 } else {
                     return false;
                 }
             }
-            if (previous.value.compareTo(value) < 0) {
+            if (compare(previous.value, value) < 0) {
                 previous.right = new Node(value);
             } else {
                 previous.left = new Node(value);
@@ -137,27 +144,26 @@ public class BinaryTreeSet implements Iterable<Integer> {
         }
     }
 
-    public boolean addAll(Collection<Integer> values) {
+    public boolean addAll(Collection<E> values) {
         boolean hasTreeChanged = false;
-        for (Integer value : values) {
-            boolean isValueAdded = add(value);
-            hasTreeChanged = hasTreeChanged || isValueAdded;
+        for (E value : values) {
+            if (add(value)) {
+                hasTreeChanged = true;
+            }
         }
         return hasTreeChanged;
     }
 
-    public boolean remove(Integer value) {
-        if (value == null) {
-            return false;
-        } else {
+    public boolean remove(E value) {
+        if (value != null) {
             Node node = root, parent = null;
             boolean isLeftChild = true;
             while (node != null) {
-                if (node.value.compareTo(value) < 0) {
+                if (compare(node.value, value) < 0) {
                     parent = node;
                     node = node.right;
                     isLeftChild = false;
-                } else if (node.value.compareTo(value) > 0) {
+                } else if (compare(node.value, value) > 0) {
                     parent = node;
                     node = node.left;
                     isLeftChild = true;
@@ -179,7 +185,7 @@ public class BinaryTreeSet implements Iterable<Integer> {
                             parent.right = node.left;
                         }
                     } else {
-                        Integer minValueInRightSubTree = findMin(node.right);
+                        E minValueInRightSubTree = findMin(node.right);
                         remove(minValueInRightSubTree);
                         node.value = minValueInRightSubTree;
                     }
@@ -187,15 +193,16 @@ public class BinaryTreeSet implements Iterable<Integer> {
                     return true;
                 }
             }
-            return false;
         }
+        return false;
     }
 
-    public boolean removeAll(Collection<Integer> values) {
+    public boolean removeAll(Collection<E> values) {
         boolean hasTreeChanged = false;
-        for (Integer value : values) {
-            boolean isValueRemoved = remove(value);
-            hasTreeChanged = hasTreeChanged || isValueRemoved;
+        for (E value : values) {
+            if (remove(value)) {
+                hasTreeChanged = true;
+            }
         }
         return hasTreeChanged;
     }
@@ -214,7 +221,12 @@ public class BinaryTreeSet implements Iterable<Integer> {
         }
     }
 
-    private Integer findMin(Node startingNode) {
+    @SuppressWarnings("unchecked")
+    private int compare(E o1, E o2) {
+        return comparator == null ? ((Comparable<? super E>)o1).compareTo(o2) : comparator.compare(o1, o2);
+    }
+
+    private E findMin(Node startingNode) {
         Node node = startingNode;
         if (node == null) {
             return null;
@@ -225,7 +237,7 @@ public class BinaryTreeSet implements Iterable<Integer> {
         return node.value;
     }
 
-    private Integer findMax(Node startingNode) {
+    private E findMax(Node startingNode) {
         Node node = startingNode;
         if (node == null) {
             return null;
