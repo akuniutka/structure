@@ -201,7 +201,11 @@ public class BinaryTreeSet<E> implements Iterable<E> {
 
     @SuppressWarnings("unchecked")
     private int compare(E o1, E o2) {
-        return comparator == null ? ((Comparable<? super E>)o1).compareTo(o2) : comparator.compare(o1, o2);
+        if (comparator != null) {
+            return comparator.compare(o1, o2);
+        } else {
+            return ((Comparable<? super E>) o1).compareTo(o2);
+        }
     }
 
     private E findMin(Node startingNode) {
