@@ -155,43 +155,21 @@ public class BinaryTreeSet<E> implements Iterable<E> {
     }
 
     public boolean remove(E value) {
-        if (value != null) {
-            Node node = root, parent = null;
-            boolean isLeftChild = true;
-            while (node != null) {
-                if (compare(node.value, value) < 0) {
-                    parent = node;
-                    node = node.right;
-                    isLeftChild = false;
-                } else if (compare(node.value, value) > 0) {
-                    parent = node;
-                    node = node.left;
-                    isLeftChild = true;
-                } else {
-                    if (node.left == null) {
-                        if (parent == null) {
-                            root = node.right;
-                        } else if (isLeftChild) {
-                            parent.left = node.right;
-                        } else {
-                            parent.right = node.right;
-                        }
-                    } else if (node.right == null) {
-                        if (parent == null) {
-                            root = node.left;
-                        } else if (isLeftChild) {
-                            parent.left = node.left;
-                        } else {
-                            parent.right = node.left;
-                        }
-                    } else {
-                        E minValueInRightSubTree = findMin(node.right);
-                        remove(minValueInRightSubTree);
-                        node.value = minValueInRightSubTree;
-                    }
-                    size--;
-                    return true;
-                }
+        Node node = root, parent = null;
+        boolean isLeftChild = true;
+        while (node != null) {
+            if (compare(node.value, value) < 0) {
+                parent = node;
+                node = node.right;
+                isLeftChild = false;
+            } else if (compare(node.value, value) > 0) {
+                parent = node;
+                node = node.left;
+                isLeftChild = true;
+            } else {
+                removeNode(parent, node, isLeftChild);
+                size--;
+                return true;
             }
         }
         return false;
@@ -246,5 +224,41 @@ public class BinaryTreeSet<E> implements Iterable<E> {
             node = node.right;
         }
         return node.value;
+    }
+
+    private void removeNode(Node parent, Node node, boolean isLeftChild) {
+        if (node.left == null) {
+            if (parent == null) {
+                root = node.right;
+            } else if (isLeftChild) {
+                parent.left = node.right;
+            } else {
+                parent.right = node.right;
+            }
+        } else if (node.right == null) {
+            if (parent == null) {
+                root = node.left;
+            } else if (isLeftChild) {
+                parent.left = node.left;
+            } else {
+                parent.right = node.left;
+            }
+        } else {
+            node.value = popMinValueFromRightSubtreeOf(node);
+        }
+    }
+
+    private E popMinValueFromRightSubtreeOf(Node subtreeRoot) {
+        Node node = subtreeRoot.right;
+        if (node.left == null) {
+            subtreeRoot.right = node.right;
+            return node.value;
+        }
+        while (node.left.left != null) {
+            node = node.left;
+        }
+        E value = node.left.value;
+        node.left = node.left.right;
+        return value;
     }
 }
