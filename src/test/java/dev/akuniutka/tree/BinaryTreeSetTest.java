@@ -195,24 +195,30 @@ class BinaryTreeSetTest {
     }
 
     @Test
-    void toStringIfTreeIsEmpty() {
+    void testToPrettyStringIfTreeIsEmpty() {
         BinaryTreeSet<Integer> set = new BinaryTreeSet<>();
-        assertEquals("null", set.toString());
+        assertEquals("null", set.toPrettyString());
     }
 
     @Test
-    void testToStringIfTreeIsNotEmpty() {
+    void testToPrettyStringIfTreeIsNotEmpty() {
         BinaryTreeSet<Integer> set = new BinaryTreeSet<>();
         String expected =
-                "+- 40\n" +
-                "   +- 20\n" +
-                "   |  +- 10\n" +
-                "   |  +- 30\n" +
-                "   +- 60\n" +
-                "      +- 50\n" +
-                "      +- 70\n";
-        set.addAll(Arrays.asList(40, 20, 60, 10, 30, 50, 70));
-        assertEquals(expected, set.toString());
+                "    ╭─┬ 10\n" +
+                "    │ │ ╭── 12\n" +
+                "    │ ╰─┴ 15\n" +
+                "  ╭─┼ 20\n" +
+                "  │ ╰── 30\n" +
+                "──┼ 40\n" +
+                "  │   ╭─┬ 45\n" +
+                "  │   │ │ ╭── 46\n" +
+                "  │   │ ╰─┴ 47\n" +
+                "  │ ╭─┴ 50\n" +
+                "  ╰─┼ 60\n" +
+                "    ╰── 70\n";
+        set.addAll(Arrays.asList(40, 20, 60, 10, 30, 50, 70, 15, 12, 45, 47, 46));
+        System.out.println(set.toPrettyString());
+        assertEquals("\n" + expected, "\n" + set.toPrettyString());
     }
 
 }

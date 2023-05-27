@@ -197,9 +197,10 @@ public class BinaryTreeSet<E> implements Iterable<E> {
     }
 
     // TODO: gather tree structure output from nodes here
-    // TODO: change tree structure output: left branches above the root
+    // TODO: add check for recursion (if it is possible)
     // TODO: make a special case for empty tree (<no elements> or <empty>)
     // TODO: convert to standard toString() for sets
+    // Box Drawing characters: ─│┌┐└┘├┤┬┴┼╭╮╯╰
     @Override
     public String toString() {
         if (root == null) {
@@ -207,6 +208,48 @@ public class BinaryTreeSet<E> implements Iterable<E> {
         } else {
             return root.toString(" ");
         }
+    }
+
+    public String toPrettyString() {
+        StringBuilder buffer = new StringBuilder();
+        if (root == null) {
+            buffer.append(root);
+        } else {
+            buffer.append(nodeString(root, false, ""));
+        }
+        return buffer.toString();
+    }
+
+    private String nodeString(Node node, boolean isLeftChild, String prefix) {
+        StringBuilder buffer = new StringBuilder();
+        if (node.left != null) {
+            if (isLeftChild || node == root) {
+                buffer.append(nodeString(node.left, true, prefix + "  "));
+            } else {
+                buffer.append(nodeString(node.left, true, prefix + "│ "));
+            }
+        }
+        if (node != root) {
+            buffer.append(prefix);
+            buffer.append(isLeftChild ? '╭' : '╰');
+        } else {
+            buffer.append(prefix);
+            buffer.append('─');
+        }
+        buffer.append('─');
+        buffer.append(nodeCharacter(node)).append(' ').append(node.value).append('\n');
+        if (node.right != null) {
+            if (isLeftChild && node != root) {
+                buffer.append(nodeString(node.right, false, prefix + "│ "));
+            } else {
+                buffer.append(nodeString(node.right, false, prefix + "  "));
+            }
+        }
+        return buffer.toString();
+    }
+
+    private char nodeCharacter(Node node) {
+        return node.left == null ? (node.right == null ? '─' : '┬') : (node.right == null ? '┴' : '┼');
     }
 
     @SuppressWarnings("unchecked")
