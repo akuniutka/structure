@@ -10,6 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BinaryTreeSetTest {
 
+    // TODO: add output of tres structure to all tests
+    // TODO: move tree structure output from base class to test class (Reflection API?)
+
     @Test
     void testBinaryTreeSetWithoutComparator() {
         BinaryTreeSet<Integer> set = new BinaryTreeSet<>();

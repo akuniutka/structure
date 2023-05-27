@@ -3,6 +3,10 @@ package dev.akuniutka.tree;
 import java.util.*;
 
 public class BinaryTreeSet<E> implements Iterable<E> {
+    // TODO: add toArray() method
+    // TODO: remove null value checks
+    // TODO: rebalance tree after an element insertion/removal (once for removeAll()/ addAll())
+
     private Node root;
     private int size;
     private final Comparator<? super E> comparator;
@@ -16,6 +20,7 @@ public class BinaryTreeSet<E> implements Iterable<E> {
             this.value = value;
         }
 
+        // TODO: remove structure output, leave just value or (null)
         @Override
         public String toString() {
             return "+- " + value;
@@ -36,6 +41,7 @@ public class BinaryTreeSet<E> implements Iterable<E> {
     }
 
     private class TreeIterator implements Iterator<E> {
+        // TODO: replace a list with an array
         private final List<E> values = new ArrayList<>();
         private int cursor;
 
@@ -63,7 +69,7 @@ public class BinaryTreeSet<E> implements Iterable<E> {
     }
 
     public BinaryTreeSet() {
-        comparator = null;
+        this(null);
     }
 
     public BinaryTreeSet(Comparator<? super E> comparator) {
@@ -190,6 +196,10 @@ public class BinaryTreeSet<E> implements Iterable<E> {
         size = 0;
     }
 
+    // TODO: gather tree structure output from nodes here
+    // TODO: change tree structure output: left branches above the root
+    // TODO: make a special case for empty tree (<no elements> or <empty>)
+    // TODO: convert to standard toString() for sets
     @Override
     public String toString() {
         if (root == null) {
@@ -262,6 +272,7 @@ public class BinaryTreeSet<E> implements Iterable<E> {
             node = node.left;
         }
         E value = node.left.value;
+        // TODO: replace far call "node.left.right" with a method of Node
         node.left = node.left.right;
         return value;
     }
