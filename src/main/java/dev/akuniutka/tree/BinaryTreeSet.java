@@ -5,7 +5,7 @@ import java.util.*;
 public class BinaryTreeSet<E> implements Iterable<E> {
     // TODO: add toArray() method
     // TODO: remove null value checks
-    // TODO: rebalance tree after an element insertion/removal (once for removeAll()/ addAll())
+    // TODO: balance tree after an element insertion/removal (once for removeAll()/ addAll())
 
     private Node root;
     private int size;
@@ -18,25 +18,6 @@ public class BinaryTreeSet<E> implements Iterable<E> {
 
         Node(E value) {
             this.value = value;
-        }
-
-        // TODO: remove structure output, leave just value or (null)
-        @Override
-        public String toString() {
-            return "+- " + value;
-        }
-
-        String toString(String prefix) {
-            StringBuilder buffer = new StringBuilder();
-            buffer.append(prefix, 0, prefix.length() - 1);
-            buffer.append(this).append("\n");
-            if (left != null) {
-                buffer.append(left.toString(prefix + "  |"));
-            }
-            if (right != null) {
-                buffer.append(right.toString(prefix + "   "));
-            }
-            return buffer.toString();
         }
     }
 
@@ -196,61 +177,18 @@ public class BinaryTreeSet<E> implements Iterable<E> {
         size = 0;
     }
 
-    // TODO: gather tree structure output from nodes here
     // TODO: add check for recursion (if it is possible)
     // TODO: make a special case for empty tree (<no elements> or <empty>)
     // TODO: convert to standard toString() for sets
-    // Box Drawing characters: ─│┌┐└┘├┤┬┴┼╭╮╯╰
     @Override
     public String toString() {
         if (root == null) {
             return "null";
         } else {
-            return root.toString(" ");
+            return root.toString();
         }
     }
 
-    public String toPrettyString() {
-        StringBuilder buffer = new StringBuilder();
-        if (root == null) {
-            buffer.append(root);
-        } else {
-            buffer.append(nodeString(root, false, ""));
-        }
-        return buffer.toString();
-    }
-
-    private String nodeString(Node node, boolean isLeftChild, String prefix) {
-        StringBuilder buffer = new StringBuilder();
-        if (node.left != null) {
-            if (isLeftChild || node == root) {
-                buffer.append(nodeString(node.left, true, prefix + "  "));
-            } else {
-                buffer.append(nodeString(node.left, true, prefix + "│ "));
-            }
-        }
-        if (node != root) {
-            buffer.append(prefix);
-            buffer.append(isLeftChild ? '╭' : '╰');
-        } else {
-            buffer.append(prefix);
-            buffer.append('─');
-        }
-        buffer.append('─');
-        buffer.append(nodeCharacter(node)).append(' ').append(node.value).append('\n');
-        if (node.right != null) {
-            if (isLeftChild && node != root) {
-                buffer.append(nodeString(node.right, false, prefix + "│ "));
-            } else {
-                buffer.append(nodeString(node.right, false, prefix + "  "));
-            }
-        }
-        return buffer.toString();
-    }
-
-    private char nodeCharacter(Node node) {
-        return node.left == null ? (node.right == null ? '─' : '┬') : (node.right == null ? '┴' : '┼');
-    }
 
     @SuppressWarnings("unchecked")
     private int compare(E o1, E o2) {
