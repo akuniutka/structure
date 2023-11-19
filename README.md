@@ -1,1 +1,1 @@
-An implementation of a binary tree collection. 
+Implementations of different data structures.
