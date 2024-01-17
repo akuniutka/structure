@@ -1,4 +1,4 @@
-package dev.akuniutka.tree;
+package io.github.akuniutka.structure;
 
 import org.junit.jupiter.api.Test;
 
