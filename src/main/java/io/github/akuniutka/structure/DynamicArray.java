@@ -1,30 +1,30 @@
 package io.github.akuniutka.structure;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 /**
- * A sample implementation of dynamic array structure for primitive
- * {@code int} type. A dynamic array benefits from {@code O(1)} access
- * to its elements by element's index as a fixed-length array does. But
- * a dynamic array also adjusts its capacity to the number of elements,
- * while a fixed-length array cannot contain more elements than it was
- * specified on the fixed-length arrays creation. This implementation
- * keeps its capacity not less than {@code initialCapacity} which is
- * 10 by default.
+ * A sample implementation of dynamic array structure. A dynamic array
+ * benefits from {@code O(1)} access to its elements by element's index
+ * as a fixed-length array does. But a dynamic array also adjusts its
+ * capacity to the number of elements, while a fixed-length array cannot
+ * contain more elements than it was specified at the fixed-length arrays
+ * creation. This implementation keeps its capacity not less than {@code
+ * initialCapacity} which is 10 by default.
  *
  * @author Andrei Kuniutka
  * @version 1.0
  * @since 1.0
  */
-public class DynamicArray {
+public class DynamicArray<E> {
     private static final int DEFAULT_INITIAL_CAPACITY = 10;
     private final int initialCapacity;
-    private int[] elements;
+    private Object[] elements;
     private int capacity;
     private int size;
 
     /**
-     * Creates an empty dynamic array with an initial capacity of 16.
+     * Creates an empty dynamic array with an initial capacity of 10.
      */
     public DynamicArray() {
         this(DEFAULT_INITIAL_CAPACITY);
@@ -40,7 +40,7 @@ public class DynamicArray {
      * @throws NullPointerException if the specified fixed-length array is
      *                              null
      */
-    public DynamicArray(int[] elements) {
+    public DynamicArray(E[] elements) {
         this(elements.length);
         addAll(elements);
     }
@@ -54,7 +54,7 @@ public class DynamicArray {
      *                 into the newly created dynamic array
      * @throws NullPointerException if the specified dynamic array is null
      */
-    public DynamicArray(DynamicArray elements) {
+    public DynamicArray(DynamicArray<? extends E> elements) {
         this(elements.toArray());
     }
 
@@ -70,7 +70,7 @@ public class DynamicArray {
             throw new IllegalArgumentException();
         }
         this.initialCapacity = initialCapacity;
-        elements = new int[initialCapacity];
+        elements = new Object[initialCapacity];
         capacity = initialCapacity;
     }
 
@@ -82,9 +82,9 @@ public class DynamicArray {
      * @throws IndexOutOfBoundsException if the index is out of range
      *                                   ({@code index < 0 || index >= size()})
      */
-    public int get(int index) {
+    public E get(int index) {
         checkIndexWithinRange(index);
-        return elements[index];
+        return elements(index);
     }
 
     /**
@@ -97,9 +97,9 @@ public class DynamicArray {
      * @throws IndexOutOfBoundsException if the index is out of range
      *                                   ({@code index < 0 || index >= size()})
      */
-    public int set(int index, int element) {
+    public E set(int index, E element) {
         checkIndexWithinRange(index);
-        int oldElement = elements[index];
+        E oldElement = elements(index);
         elements[index] = element;
         return oldElement;
     }
@@ -109,7 +109,7 @@ public class DynamicArray {
      *
      * @param element element to be appended to the dynamic array
      */
-    public void add(int element) {
+    public void add(E element) {
         if (size == capacity) {
             increaseCapacity();
         }
@@ -126,7 +126,7 @@ public class DynamicArray {
      * @throws IndexOutOfBoundsException if the index is out of range
      *                                   ({@code index < 0 || index >= size()})
      */
-    public void add(int index, int element) {
+    public void add(int index, E element) {
         checkIndexWithinRange(index);
         if (size == capacity) {
             increaseCapacity();
@@ -147,8 +147,8 @@ public class DynamicArray {
      * @throws NullPointerException if the specified fixed-length array
      *                              is null
      */
-    public boolean addAll(int[] elements) {
-        for (int element : elements) {
+    public boolean addAll(E[] elements) {
+        for (E element : elements) {
             add(element);
         }
         return elements.length != 0;
@@ -165,7 +165,7 @@ public class DynamicArray {
      * @throws NullPointerException if the specified dynamic array is
      *                              null
      */
-    public boolean addAll(DynamicArray elements) {
+    public boolean addAll(DynamicArray<? extends E> elements) {
         return addAll(elements.toArray());
     }
 
@@ -188,7 +188,7 @@ public class DynamicArray {
      * @throws NullPointerException      if the specified fixed-length
      *                                   array is null
      */
-    public boolean addAll(int index, int[] elements) {
+    public boolean addAll(int index, E[] elements) {
         int n = elements.length;
         checkIndexWithinRange(index);
         for (int i = 0; i < n; i++) {
@@ -216,7 +216,7 @@ public class DynamicArray {
      * @throws NullPointerException      if the specified dynamic array
      *                                   is null
      */
-    public boolean addAll(int index, DynamicArray elements) {
+    public boolean addAll(int index, DynamicArray<? extends E> elements) {
         return addAll(index, elements.toArray());
     }
 
@@ -229,9 +229,9 @@ public class DynamicArray {
      * @throws IndexOutOfBoundsException if the index is out of range
      *                                   ({@code index < 0 || index >= size()})
      */
-    public int remove(int index) {
+    public E remove(int index) {
         checkIndexWithinRange(index);
-        int oldElement = elements[index];
+        E oldElement = elements(index);
         size--;
         if (size > index) {
             System.arraycopy(elements, index + 1, elements, index, size - index);
@@ -267,30 +267,42 @@ public class DynamicArray {
     }
 
     /**
-     * Sorts elements into ascending order.
+     * Sorts elements according to the order induced by the specified
+     * {@code comparator}. If the specified comparator is {@code null}
+     * then elements must implement {@code Comparable} interface and
+     * the natural ordering is used.
+     *
+     * @param comparator comparator used to compare elements
      */
-    public void sort() {
-        Arrays.sort(elements, 0, size);
+    @SuppressWarnings("unchecked")
+    public void sort(Comparator<? super E> comparator) {
+        Arrays.sort((E[]) elements, 0, size, comparator);
     }
 
     /**
      * Returns a fixed-length array containing all elements of the
-     * dynamic array in proper order (from the first element to thr
+     * dynamic array in proper order (from the first element to the
      * last element).
      *
      * @return a fixed length array containing all elements of the
      * dynamic array in proper order
      */
-    public int[] toArray() {
-        int[] result = new int[size];
+    @SuppressWarnings("unchecked")
+    public E[] toArray() {
+        Object[] result = new Object[size];
         System.arraycopy(elements, 0, result, 0, size);
-        return result;
+        return (E[]) result;
     }
 
     private void checkIndexWithinRange(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private E elements(int index) {
+        return (E) elements[index];
     }
 
     private void increaseCapacity() {
@@ -306,7 +318,7 @@ public class DynamicArray {
     }
 
     private void adjustCapacity(int newCapacity) {
-        int[] newStorage = new int[newCapacity];
+        Object[] newStorage = new Object[newCapacity];
         System.arraycopy(elements, 0, newStorage, 0, size);
         elements = newStorage;
         capacity = newCapacity;
